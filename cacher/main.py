@@ -6,6 +6,7 @@ import redis
 import requests 
 import json
 from conf import *
+import time
 import datetime
 
 ts = datetime.datetime.now().timestamp()
@@ -21,7 +22,6 @@ def add(personId: int, data: dict)-> None:
   keyTimestamp: str =  f"{keyBase}timestamp"
   CACHE.lpush(keyData, serialized)
   CACHE.lpush(keyTimestamp, datetime.datetime.now().timestamp())
-
 
 def clean_old(personId: int) -> None:
   """
@@ -49,6 +49,8 @@ for i in IDS:
   trace = data["trace"]
   sensors = trace["sensors"]
   add(i, sensors)
+  clean_old(i)
+  time.sleep(REQUEST_DELAY)
 
 
 print(json.dumps(sensors, indent=2))
