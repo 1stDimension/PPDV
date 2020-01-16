@@ -3,6 +3,7 @@ ID_ID
 """
 import os
 import redis 
+import asyncio
 import requests 
 import json
 from conf import *
@@ -41,19 +42,33 @@ def clean_old(personId: int) -> None:
     else:
       needs_cleaning = False
 
+async def pull_data(personId: int):
+  """
+  Asynchronously and continuously pull data from server
+  """
+  while True:
+    response = await requests.get(f"{BASE_URL}{i}")
+    data = response.json()
+    trace = data["trace"]
+    sensors = trace["sensors"]
+    print(json.dumps(sensors[0]))
+    add(i, sensors)
+    await asyncio.sleep(REQUEST_DELAY)
 
+tasks : list = []
 for i in IDS:
-  i = 1
-  response = requests.get(f"{BASE_URL}{i}")
-  data = response.json()
-  trace = data["trace"]
-  sensors = trace["sensors"]
-  add(i, sensors)
-  clean_old(i)
-  time.sleep(REQUEST_DELAY)
+  tasks.append( asyncio.create_task(pull_data(i)) )
 
+# response = requests.get(f"{BASE_URL}{i}")
+# data = response.json()
+# trace = data["trace"]
+# sensors = trace["sensors"]
+# add(i, sensors)
+# clean_old(i)
+# time.sleep(REQUEST_DELAY)
 
-print(json.dumps(sensors, indent=2))
+while True:
+  await asyncio.sleep(10)
 
 
 
