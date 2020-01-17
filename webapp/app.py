@@ -1,14 +1,31 @@
-import dash
 import json
+import redis
+import statistics as stat
+from functools import reduce
+
+import dash
 import dash_core_components as dcc
 import dash_html_components as html
 import dash_bootstrap_components as dbc
+import plotly.graph_objects as go
+from dash.dependencies import Input, Output
+
+
+from conf import *
+
+CACHE = None
+try:
+    CACHE = redis.Redis(host=HOST, port=PORT)
+except redis.ConnectionError as e:
+    print(f"Redis connection error:\n{e}")
 
 PATIENT_IDS = [range(1, 7)]
 
 MOCK_DATA: dict = json.loads(
     '{ "birthdate": "1982", "disabled": false, "firstname": "Janek", "id": 12, "lastname": "Grzegorczyk", "trace": { "id": 2494801012010, "name": "bach", "sensors": [ { "anomaly": false, "id": 0, "value": 1023 }, { "anomaly": false, "id": 1, "value": 692 }, { "anomaly": false, "id": 2, "value": 31 }, { "anomaly": false, "id": 3, "value": 542 }, { "anomaly": false, "id": 4, "value": 134 }, { "anomaly": false, "id": 5, "value": 1023 } ] } }'
 )
+
+MOCK_ID = 1
 
 MOCK_WALK: dict = json.loads(
     """{
@@ -99,10 +116,7 @@ MOCK_WALK: dict = json.loads(
 }"""
 )
 
-print(json.dumps(MOCK_DATA, indent=2))
-
 app = dash.Dash(__name__, external_stylesheets=[dbc.themes.BOOTSTRAP])
-
 
 
 def generate_patient_info_bar(patient: dict) -> dbc.Col:
@@ -128,7 +142,7 @@ def generate_patient_info_bar(patient: dict) -> dbc.Col:
                 className="",
             ),
         ],
-        className="col-5 border shadow m-2 p-3",
+        className="col-5 border shadow",
     )
 
 
@@ -181,6 +195,30 @@ content = dbc.Container(
     ]
 )
 app.layout = html.Div(children=[navbar, content])
+
+@app.callback(
+    Output("walking","figure"),
+    [Input("interval", "n_intervals")]
+)
+def update_left_waliking(n):
+    key: str = f"{MOCK_ID}_data"
+    sample = CACHE.lrange(key,-1, -1)[0]
+    deserialized = json.loads(sample)
+    print(json.dumps(deserialized, indent=2))
+    print("*" * 50)
+    left = list(map(lambda x: x["value"], deserialized[:3]))
+    right = list(map(lambda x: x["value"], deserialized[3:]))
+
+    left_avg = stat.mean(left) 
+    right_avg = stat.mean(right) 
+    return {
+        "data":[
+            { "type": "bar",
+                "x":[ "Left", "Right"],
+                "y":[ left_avg, right_avg]
+            }
+        ]  
+    }
 
 @app.callback(
     Output("left_foot_sensors", "figure"),
