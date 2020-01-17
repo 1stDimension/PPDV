@@ -154,6 +154,7 @@ content = dbc.Container(
     [
         patient_info_bar,
         dcc.Interval(id="walking_interval", interval= 500, n_intervals=0),
+        dcc.Interval(id="interval", interval=5 * 1000, n_intervals=0),
         dbc.Col(
             [
                 dcc.Graph(id="left_foot_sensors"),
