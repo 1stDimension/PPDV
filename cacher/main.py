@@ -11,8 +11,11 @@ from conf import *
 import time
 import datetime
 
-CACHE = redis.Redis(host=HOST, port=PORT)
-
+CACHE = None
+try:
+  CACHE = redis.Redis(host=HOST, port=PORT)
+except redis.ConnectionError as e:
+  print(f"Connection error occurre:\n{e}")
 
 def add(personId: int, data: dict) -> None:
     """
@@ -73,15 +76,21 @@ async def pull_data(personId: int) -> None:
 
 async def main():
     print(f"execution of loop starts {IDS}")
+    try:
+      pullers = asyncio.gather( *(pull_data(i) for i in IDS) )
+      cleaner = asyncio.gather( *(clean_old(i) for i in IDS) )
 
-    pullers = asyncio.gather( *(pull_data(i) for i in IDS) )
-    cleaner = asyncio.gather( *(clean_old(i) for i in IDS) )
+      all_workers = asyncio.gather(pullers, cleaner)
+      await all_workers
 
-    all_workers = asyncio.gather(pullers, cleaner)
-    await all_workers
-
-    while True:
-      await asyncio.sleep(10)
+      while True:
+        await asyncio.sleep(10)
+    except requests.exceptions.Timeout as e:
+      print(f"Connection to api has timed out:\n{e}")
+    except requests.exceptions.ConnectionError as e:
+      print(f"There was an error connecting to api:\n{e}")
+    except redis.ConnectionError as e:
+      print(f"Connection error occurre:\n{e}")
 
 logging.basicConfig(level=logging.DEBUG)
 asyncio.run(main(), debug=True)
