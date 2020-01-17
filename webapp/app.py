@@ -153,18 +153,16 @@ navbar = dbc.NavbarSimple(
 content = dbc.Container(
     [
         patient_info_bar,
-        dcc.Interval(
-          id="interval",
-          interval= 1*1000,
-          n_intervals = 0
-        ),
+        dcc.Interval(id="walking_interval", interval= 500, n_intervals=0),
         dbc.Col(
             [
                 dbc.Row(dcc.Graph(id="left_foot_sensors")),
                 dbc.Row(dcc.Graph(id="right_foot_sensors")),
             ]
         ),
-        dbc.Col(),
+        dbc.Col([
+            dcc.Graph(id="walking"),
+        ]),
     ]
 )
 app.layout = html.Div(children=[navbar, content])
