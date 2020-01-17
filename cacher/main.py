@@ -64,8 +64,11 @@ async def pull_data(personId: int) -> None:
   """
     while True:
       loop = asyncio.get_event_loop()
+      print("???????????")
       futureResponse = loop.run_in_executor(None, requests.get, f"{BASE_URL}{personId}")
+      print("____________")
       response = await futureResponse
+      print("************")
       data: dict    = response.json()
       trace: dict   = data["trace"]
       sensors: dict = trace["sensors"]
@@ -92,5 +95,5 @@ async def main():
     except redis.ConnectionError as e:
       print(f"Connection error occurre:\n{e}")
 
-logging.basicConfig(level=logging.DEBUG)
-asyncio.run(main(), debug=True)
+# logging.basicConfig(level=logging.DEBUG)
+asyncio.run(main())
