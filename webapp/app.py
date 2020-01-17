@@ -156,9 +156,23 @@ content = dbc.Container(
         dcc.Interval(id="walking_interval", interval= 500, n_intervals=0),
         dbc.Col(
             [
-                dbc.Row(dcc.Graph(id="left_foot_sensors")),
-                dbc.Row(dcc.Graph(id="right_foot_sensors")),
-            ]
+                dcc.Graph(id="left_foot_sensors"),
+                dcc.Slider(
+                    id="sensor_skip_slider",
+                    min=1,
+                    max=100,
+                    step=1,
+                    value=100,
+                    marks={
+                        # 0:  {'label': '0', 'style': {'color': '#f50'}},
+                        i: "{}".format(i)
+                        for i in range(1, 101, 10)
+                        # 10: {'label': '10', 'style': {'color': '#f50'}}
+                    },
+                ),
+                dcc.Graph(id="right_foot_sensors"),
+            ],
+            className="border shadow",
         ),
         dbc.Col([
             dcc.Graph(id="walking"),
