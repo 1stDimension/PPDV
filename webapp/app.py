@@ -169,8 +169,13 @@ content = dbc.Container(
 )
 app.layout = html.Div(children=[navbar, content])
 
-@app.callback(Output('left_foot_sensors', 'figure'), [Input('interval-component')])
-def update_left_sensors
+def update_left_sensors(n, step):
+    key: str = f"{MOCK_ID}_data"
+    data: list = CACHE.lrange(key, 0, -1)
+    deserialized = map(lambda x: json.loads(x), data)
+    sensors = []
+    for i in range(6):
+        sensors.append(map(lambda x: x[i]["value"], deserialized))
 
 
 if __name__ == "__main__":
