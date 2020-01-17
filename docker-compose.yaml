@@ -1,5 +1,10 @@
 version: "3.7"
 services: 
+  cacher:
+    build: ./cacher
+    image: cacher:dev
+    depends_on: 
+      - redis
   redis:
     image: redis:5.0.7-alpine
     ports: 
