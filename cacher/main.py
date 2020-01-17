@@ -25,8 +25,8 @@ def add(personId: int, data: dict) -> None:
     keyBase: str = f"{personId}_"
     keyData: str = f"{keyBase}data"
     keyTimestamp: str = f"{keyBase}timestamp"
-    CACHE.lpush(keyData, serialized)
-    CACHE.lpush(keyTimestamp, int(datetime.datetime.now().timestamp()) )
+    CACHE.rpush(keyData, serialized)
+    CACHE.rpush(keyTimestamp, int(datetime.datetime.now().timestamp()) )
 
 
 async def clean_old(personId: int) -> None:
@@ -47,14 +47,13 @@ async def clean_old(personId: int) -> None:
       else:
           break
       print("to Check{:^12}".format(toCheck))
-      clean: bool = toCheck <= datetime.datetime.now().timestamp() - MAX_SEC
+      clean: bool = toCheck <= int(datetime.datetime.now().timestamp()) - MAX_SEC
       if clean:
         print("Cleaning")
         CACHE.lpop(keyData)
         CACHE.lpop(keyTimestamp)
       else:
         needs_cleaning = False
-        
     await asyncio.sleep(CLEAR_DELAY)
 
 
