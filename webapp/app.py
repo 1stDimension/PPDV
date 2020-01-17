@@ -169,6 +169,10 @@ content = dbc.Container(
 )
 app.layout = html.Div(children=[navbar, content])
 
+@app.callback(
+    Output("left_foot_sensors", "figure"),
+    [Input("interval", "n_intervals"), Input("sensor_skip_slider", "value")],
+)
 def update_left_sensors(n, step):
     key: str = f"{MOCK_ID}_data"
     data: list = CACHE.lrange(key, 0, -1)
@@ -176,6 +180,31 @@ def update_left_sensors(n, step):
     sensors = []
     for i in range(6):
         sensors.append(map(lambda x: x[i]["value"], deserialized))
+    # sensor_zero = map(lambda x: x["value"], left)
+    # sensor_zero_anomaly = map(lambda x: x["value"] if x["anomaly"] else None, left)
+    # fig = go.Figure()
+    return {
+        "data": [
+            {
+                "x": list(range(0, len(data), step)),
+                "y": list(sensors[1])[0::step],
+                # "text": ["a", "b", "c", "d"],
+                # "customdata": ["c.a", "c.b", "c.c", "c.d"],
+                "name": f"Sensor 1",
+                "mode": "lines",
+                "marker": {"size": 1, "color": "rgb(255, 0, 0)"},
+            },
+            {
+                "x": list(range(0, len(data), step)),
+                "y": list(sensors[2])[0::step],
+                # "text": ["w", "x", "y", "z"],
+                # "customdata": ["c.w", "c.x", "c.y", "c.z"],
+                "name": "Sensor 2",
+                "mode": "lines",
+                "marker": {"size": 1, "color": "rgb(0,255,0)"},
+            },
+        ]
+    }
 
 
 if __name__ == "__main__":
