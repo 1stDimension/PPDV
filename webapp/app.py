@@ -25,18 +25,21 @@ except redis.ConnectionError as e:
 
 PATIENT_IDS = [range(1, 7)]
 PATIENT_DATA = []
-for i in PATIENT_IDS:
-    response = requests.get(BASE_URL + f"{i}")
-    json_data = response.json()
-    data = {
-    "birthdate": json_data["birthdate"],
-    "disabled": json_data["disabled"],
-    "firstname": json_data["firstname"],
-    "id": json_data["id"],
-    "lastname": json_data["lastname"],
-    }
-    PATIENT_DATA.append(data)
-
+try:
+    for i in PATIENT_IDS:
+        response = requests.get(BASE_URL + f"{i}")
+        json_data = response.json()
+        data = {
+        "birthdate": json_data["birthdate"],
+        "disabled": json_data["disabled"],
+        "firstname": json_data["firstname"],
+        "id": json_data["id"],
+        "lastname": json_data["lastname"],
+        }
+        PATIENT_DATA.append(data)
+except RequestException as e:
+    print(f"Error fetching data:\n{e}")
+    exit(-1)
 
 SENSORS_ID = list(range(6))
 
