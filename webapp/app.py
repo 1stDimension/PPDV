@@ -167,7 +167,7 @@ navbar = dbc.NavbarSimple(
 content = dbc.Container(
     [
         patient_info_bar,
-        dcc.Interval(id="walking_interval", interval= 500, n_intervals=0),
+        dcc.Interval(id="walking_interval", interval=50, n_intervals=0),
         dcc.Interval(id="interval", interval=5 * 1000, n_intervals=0),
         dbc.Col(
             [
@@ -175,13 +175,13 @@ content = dbc.Container(
                 dcc.Slider(
                     id="sensor_skip_slider",
                     min=1,
-                    max=100,
+                    max=10,
                     step=1,
-                    value=100,
+                    value=1,
                     marks={
                         # 0:  {'label': '0', 'style': {'color': '#f50'}},
                         i: "{}".format(i)
-                        for i in range(1, 101, 10)
+                        for i in range(1, 11)
                         # 10: {'label': '10', 'style': {'color': '#f50'}}
                     },
                 ),
@@ -189,9 +189,7 @@ content = dbc.Container(
             ],
             className="border shadow",
         ),
-        dbc.Col([
-            dcc.Graph(id="walking"),
-        ]),
+        dbc.Col([dcc.Graph(id="walking"),]),
     ]
 )
 app.layout = html.Div(children=[navbar, content])
