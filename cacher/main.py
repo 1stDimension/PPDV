@@ -95,5 +95,5 @@ async def main():
         print(f"Connection error occurred:\n{e}")
 
 
-logging.basicConfig(level=logging.DEBUG)
-asyncio.run(main(), debug=True)
+# logging.basicConfig(level=logging.DEBUG)
+asyncio.run(main())
