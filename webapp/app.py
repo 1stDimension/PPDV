@@ -252,19 +252,23 @@ def update_left_sensors(n, step):
                 "marker": {"size": 3, "color": "rgb(255, 0, 0)"},
             },
             {
-                # "x": list(range(0, len(data))),
-                "y": sensors[1],
-                # "text": ["w", "x", "y", "z"],
-                # "customdata": ["c.w", "c.x", "c.y", "c.z"],
-                "name": "Sensor 2",
-                "type": "scatter",
-                "mode": "lines",
-                "marker": {"size": 3, "color": "rgb(0,255,0)"},
-            },
-        ],
-        "layout": {"title": "Left foot sensors"},
-        "frames": [],
-    }
+def generate_sensors_data_list(
+    sensors: List[list],
+    sensor_names: List[str],
+    step: int = 1,
+    colours: list = [(255, 0, 0), (0, 255, 0), (0, 0, 255),],
+) -> list:
+    data = []
+    for idx, value in enumerate(sensors):
+        trace = {
+            "y": value[::step],
+            "name": sensor_names[idx],
+            "type": "scatter",
+            "mode": "lines+markers",
+            "marker": {"size": 3, "color": "rgb({},{},{})".format(*(colours[idx]))},
+        }
+        data.append(trace)
+    return data
 
 
 if __name__ == "__main__":
