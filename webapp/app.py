@@ -117,16 +117,31 @@ def update_waliking(n, patient_data):
     sampleList: list = CACHE.lrange(key, -1, -1)
     response = [None, None]
     colours = ["orange",] * 6 
+    colours[3:] = ["rgb(55, 83, 109)",] * 3
+    # print(colours)
     if len(sampleList) > 0:
         sample = sampleList[0]
         deserialized = json.loads(sample)
-        left = list(map(lambda x: x["value"], deserialized[:3]))
-        right = list(map(lambda x: x["value"], deserialized[3:]))
+        # left = list(map(lambda x: x["value"], deserialized[:3]))
+        # right = list(map(lambda x: x["value"], deserialized[3:]))
 
-        left_avg = stat.mean(left)
-        right_avg = stat.mean(right)
-        response = [left_avg, right_avg]
-    return {"data": [{"type": "bar", "x": ["Left", "Right"], "y": response}]}
+        values = list(map(lambda x: x["value"], deserialized))
+
+        # left_avg = stat.mean(left)
+        # right_avg = stat.mean(right)
+        response = values
+    return {
+        "data": [
+            {
+                "type": "bar",
+                # "x": ["Left", "Right"],
+                "y": response,
+                "text": response,
+                "textposition": "auto",
+                "marker": {"color": colours},
+            }
+        ]
+    }
 
 
 @app.callback(
