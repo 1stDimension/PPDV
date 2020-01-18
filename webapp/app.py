@@ -196,29 +196,28 @@ content = dbc.Container(
 )
 app.layout = html.Div(children=[navbar, content])
 
-@app.callback(
-    Output("walking","figure"),
-    [Input("interval", "n_intervals")]
-)
+
+@app.callback(Output("walking", "figure"), [Input("interval", "n_intervals")])
 def update_left_waliking(n):
+    # start = datetime.datetime.now().timestamp()
     key: str = f"{MOCK_ID}_data"
-    sample = CACHE.lrange(key,-1, -1)[0]
+    sampleList: list = CACHE.lrange(key, -1, -1)
+    response = [None, None]
+    if len(sampleList) > 0:
+        sample = sampleList[0]
+        # print(f"_|{sample}|_")
     deserialized = json.loads(sample)
-    print(json.dumps(deserialized, indent=2))
-    print("*" * 50)
+        # filter(lambda x: )
     left = list(map(lambda x: x["value"], deserialized[:3]))
     right = list(map(lambda x: x["value"], deserialized[3:]))
 
     left_avg = stat.mean(left) 
     right_avg = stat.mean(right) 
-    return {
-        "data":[
-            { "type": "bar",
-                "x":[ "Left", "Right"],
-                "y":[ left_avg, right_avg]
-            }
-        ]  
-    }
+        # end = datetime.datetime.now().timestamp()
+        # print(f":::{end - start}:::")
+        response = [left_avg, right_avg]
+    return {"data": [{"type": "bar", "x": ["Left", "Right"], "y": response}]}
+
 
 @app.callback(
     Output("left_foot_sensors", "figure"),
