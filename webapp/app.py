@@ -3,6 +3,7 @@ import redis
 import statistics as stat
 from functools import reduce
 from typing import List, Tuple
+import requests
 
 import datetime
 import dash
@@ -23,6 +24,20 @@ except redis.ConnectionError as e:
     exit(-1)
 
 PATIENT_IDS = [range(1, 7)]
+PATIENT_DATA = []
+for i in PATIENT_IDS:
+    response = requests.get(BASE_URL + f"{i}")
+    json_data = response.json()
+    data = {
+    "birthdate": json_data["birthdate"],
+    "disabled": json_data["disabled"],
+    "firstname": json_data["firstname"],
+    "id": json_data["id"],
+    "lastname": json_data["lastname"],
+    }
+    PATIENT_DATA.append(data)
+
+
 SENSORS_ID = list(range(6))
 
 MOCK_DATA: dict = json.loads(
