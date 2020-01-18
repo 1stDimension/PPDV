@@ -221,10 +221,10 @@ def update_left_waliking(n):
 
 
 @app.callback(
-    Output("left_foot_sensors", "figure"),
+    [Output("left_foot_sensors", "figure"), Output("right_foot_sensors", "figure")],
     [Input("interval", "n_intervals"), Input("sensor_skip_slider", "value")],
 )
-def update_left_sensors(n, step):
+def update_sensors(n, step):
     key: str = f"{MOCK_ID}_data"
     data: list = CACHE.lrange(key, 0, -1)
     deserialized = map(lambda x: json.loads(x), data)
@@ -233,25 +233,26 @@ def update_left_sensors(n, step):
     # print(json.dumps(a, indent=2))
 
     sensors = []
-    for i in range(6):
-        sensors.append(list(map(lambda x: x[i].get("value"), deserialized)))
+    for i in SENSORS_ID:
+        sensors.append(list(map(lambda x: json.loads(x)[i].get("value"), data)))
+    return (
+        {
+            "data": generate_sensors_data_list(
+                sensors[:3], [f"Sensor {i}" for i in SENSORS_ID], step=step
+            ),
+            "layout": {"title": "Left foot sensors"},
+            "frames": [],
+        },
+        {
+            "data": generate_sensors_data_list(
+                sensors[3:], [f"Sensor {i}" for i in SENSORS_ID[3:]], step=step
+            ),
+            "layout": {"title": "Right foot sensors"},
+            "frames": [],
+        },
+    )
 
-    # sensor_zero = map(lambda x: x["value"], left)
-    # sensor_zero_anomaly = map(lambda x: x["value"] if x["anomaly"] else None, left)
-    # fig = go.Figure()
-    return {
-        "data": [
-            {
-                # "x": list(range(0, len(data))),
-                "y": sensors[0],
-                # "text": ["a", "b", "c", "d"],
-                # "customdata": ["c.a", "c.b", "c.c", "c.d"],
-                "name": f"Sensor 1",
-                "type": "scatter",
-                "mode": "lines+markers",
-                "marker": {"size": 3, "color": "rgb(255, 0, 0)"},
-            },
-            {
+
 def generate_sensors_data_list(
     sensors: List[list],
     sensor_names: List[str],
