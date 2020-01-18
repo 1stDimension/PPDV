@@ -206,7 +206,7 @@ app.layout = html.Div(children=[navbar, content])
 
 
 @app.callback(Output("walking", "figure"), [Input("interval", "n_intervals")])
-def update_left_waliking(n):
+def update_waliking(n):
     # start = datetime.datetime.now().timestamp()
     key: str = f"{MOCK_ID}_data"
     sampleList: list = CACHE.lrange(key, -1, -1)
