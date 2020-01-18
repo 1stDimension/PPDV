@@ -186,7 +186,7 @@ content = dbc.Container(
                     min=1,
                     max=10,
                     step=1,
-                    value=1,
+                    value=5,
                     marks={
                         # 0:  {'label': '0', 'style': {'color': '#f50'}},
                         i: "{}".format(i)
