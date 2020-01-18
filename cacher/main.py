@@ -15,7 +15,7 @@ CACHE = None
 try:
   CACHE = redis.Redis(host=HOST, port=PORT)
 except redis.ConnectionError as e:
-  print(f"Connection error occurre:\n{e}")
+  print(f"Connection error occurred:\n{e}")
 
 def add(personId: int, data: dict) -> None:
     """
@@ -33,7 +33,7 @@ async def clean_old(personId: int) -> None:
   """
   Asynchronously and periodically remove data older than MAX_SEC
   """
-  print("Cleaning old")
+  # print("Cleaning old")
 
   keyBase: str = f"{personId}_"
   keyData: str = f"{keyBase}data"
@@ -46,7 +46,7 @@ async def clean_old(personId: int) -> None:
         toCheck: int = int(float(sample[0]))
       else:
           break
-      print("to Check{:^12}".format(toCheck))
+      # print("to Check{:^12}".format(toCheck))
       clean: bool = toCheck <= int(datetime.datetime.now().timestamp()) - MAX_SEC
       if clean:
         print("Cleaning")
@@ -89,7 +89,7 @@ async def main():
     except requests.exceptions.ConnectionError as e:
       print(f"There was an error connecting to api:\n{e}")
     except redis.ConnectionError as e:
-      print(f"Connection error occurre:\n{e}")
+      print(f"Connection error occurred:\n{e}")
 
 logging.basicConfig(level=logging.DEBUG)
 asyncio.run(main(), debug=True)
