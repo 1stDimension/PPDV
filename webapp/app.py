@@ -23,10 +23,10 @@ except redis.ConnectionError as e:
     print(f"Redis connection error:\n{e}")
     exit(-1)
 
-PATIENT_IDS = list(range(1, 7))
-PATIENT_DATA = []
+PATIENTS_IDS = list(range(1, 7))
+PATIENTS_DATA = []
 try:
-    for i in PATIENT_IDS:
+    for i in PATIENTS_IDS:
         # print(BASE_URL + f"{i}")
         response = requests.get(url=BASE_URL + f"{i}")
         # print(response.json())
@@ -35,22 +35,15 @@ try:
             "birthdate": json_data["birthdate"],
             "disabled": json_data["disabled"],
             "firstname": json_data["firstname"],
-            "id": json_data["id"],
+            "id": i - 1,
             "lastname": json_data["lastname"],
         }
-        PATIENT_DATA.append(data)
+        PATIENTS_DATA.append(data)
 except requests.RequestException as e:
     print(f"Error fetching data:\n{e}")
     exit(-1)
 
 SENSORS_ID = list(range(6))
-
-MOCK_DATA: dict = json.loads(
-    '{ "birthdate": "1982", "disabled": false, "firstname": "Janek", "id": 12, "lastname": "Grzegorczyk", "trace": { "id": 2494801012010, "name": "bach", "sensors": [ { "anomaly": false, "id": 0, "value": 1023 }, { "anomaly": false, "id": 1, "value": 692 }, { "anomaly": false, "id": 2, "value": 31 }, { "anomaly": false, "id": 3, "value": 542 }, { "anomaly": false, "id": 4, "value": 134 }, { "anomaly": false, "id": 5, "value": 1023 } ] } }'
-)
-
-MOCK_ID = 1
-
 
 app = dash.Dash(__name__, external_stylesheets=[dbc.themes.BOOTSTRAP])
 
@@ -61,54 +54,66 @@ def generate_patient_info_bar(patient: dict) -> dbc.Col:
   """
     return dbc.Col(
         [
-            html.H2("Patient's basic information"),
-            html.Div(
-                [
-                    html.Dl(
-                        [
-                            html.Dt("Name:"),
-                            html.Dd(patient["lastname"] + " " + patient["firstname"]),
-                            html.Dt("Born:"),
-                            html.Dd(patient["birthdate"]),
-                            html.Dt("Disabled:"),
-                            html.Dd("Yes" if patient["disabled"] else "No"),
-                        ]
-                    )
-                ],
-            ),
+            html.Div(children=[
+                html.H2("Patient's basic information"),
+                html.Div(
+                    [
+                        html.Dl(
+                            [
+                                html.Dt("Name:"),
+                                html.Dd(
+                                    patient["lastname"] + " " + patient["firstname"]
+                                ),
+                                html.Dt("Born:"),
+                                html.Dd(patient["birthdate"]),
+                                html.Dt("Disabled:"),
+                                html.Dd("Yes" if patient["disabled"] else "No"),
+                            ]
+                        )
+                    ],
+                ),
+            ], className="d-flex flex-column")
         ],
-        className="border shadow",
+        className="d-flex align-items-center border shadow",
     )
 
 
-patient_info_bar = generate_patient_info_bar(MOCK_DATA)
-
 options = []
-for i in PATIENT_DATA:
+for i in PATIENTS_DATA:
     options.append({"label": i["lastname"] + " " + i["firstname"], "value": i["id"]})
 
 
-navbar = html.Nav(
+navbar = dbc.NavbarSimple(
     children=[
-        html.P(["Happy Feet 😀"], className="navbar-brand"),
-        html.Div([
-        dcc.Dropdown(
-            id="patient_picker", options=options, placeholder="Patient", value="1"
-        ),], className=""
+        # dbc.NavItem(children=["Happy Feet 😀"]),
+        html.Div(
+            [
+                dcc.Dropdown(
+                    id="patient_picker",
+                    options=options,
+                    placeholder="Patient",
+                    value=0,
+                    style={"min-width": "200px"},
+                ),
+            ],
+            className="d-flex justify-content-between",
         )
     ],
-    className="navbar "
-    # brand=,
-    # brand_href="#",
-    # sticky="top",
+    # className="navbar "
+    brand="Happy Feet 😀",
+    brand_href="#",
+    sticky="top",
 )
 
 content = dbc.Container(
     [
-        dcc.Store(id="patient_id", storage_type="session", data={"id": 1}),
+        dcc.Store(id="patient_id", storage_type="session", data={"id": 0}),
         html.Div(
             [
-                patient_info_bar,
+                html.Div(
+                    id="patient_info_container",
+                    className="d-flex align-items-stretch",
+                ),
                 dbc.Col([dcc.Graph(id="walking")], className="border shadow"),
             ],
             className="d-flex flex-row bd-highlight",
@@ -141,12 +146,22 @@ app.layout = html.Div(children=[navbar, content])
 
 
 @app.callback(
+    [Output("patient_info_container", "children"), Output("patient_id", "data")],
+    [Input("patient_picker", "value")],
+)
+def change_patient(value):
+    newPatientData: dict = PATIENTS_DATA[value]
+    html_element = generate_patient_info_bar(newPatientData)
+    return (html_element, {"id": value})
+
+
+@app.callback(
     Output("walking", "figure"),
     [Input("interval", "n_intervals"), Input("patient_id", "data")],
 )
 def update_waliking(n, patient_data):
     # start = datetime.datetime.now().timestamp()
-    id = patient_data["id"]
+    id = patient_data["id"] + 1
     key: str = f"{id}_data"
     sampleList: list = CACHE.lrange(key, -1, -1)
     response = [None, None]
@@ -156,13 +171,9 @@ def update_waliking(n, patient_data):
     if len(sampleList) > 0:
         sample = sampleList[0]
         deserialized = json.loads(sample)
-        # left = list(map(lambda x: x["value"], deserialized[:3]))
-        # right = list(map(lambda x: x["value"], deserialized[3:]))
 
         values = list(map(lambda x: x["value"], deserialized))
 
-        # left_avg = stat.mean(left)
-        # right_avg = stat.mean(right)
         response = values
     return {
         "data": [
@@ -187,7 +198,7 @@ def update_waliking(n, patient_data):
     ],
 )
 def update_sensors(n, step, patient_data):
-    id: int = patient_data["id"]
+    id: int = patient_data["id"] + 1
     key: str = f"{id}_data"
     data: list = CACHE.lrange(key, 0, -1)
 
