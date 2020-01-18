@@ -205,13 +205,13 @@ def update_left_waliking(n):
     if len(sampleList) > 0:
         sample = sampleList[0]
         # print(f"_|{sample}|_")
-    deserialized = json.loads(sample)
+        deserialized = json.loads(sample)
         # filter(lambda x: )
-    left = list(map(lambda x: x["value"], deserialized[:3]))
-    right = list(map(lambda x: x["value"], deserialized[3:]))
+        left = list(map(lambda x: x["value"], deserialized[:3]))
+        right = list(map(lambda x: x["value"], deserialized[3:]))
 
-    left_avg = stat.mean(left) 
-    right_avg = stat.mean(right) 
+        left_avg = stat.mean(left)
+        right_avg = stat.mean(right)
         # end = datetime.datetime.now().timestamp()
         # print(f":::{end - start}:::")
         response = [left_avg, right_avg]
