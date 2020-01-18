@@ -74,6 +74,7 @@ navbar = dbc.NavbarSimple(
 
 content = dbc.Container(
     [
+        dcc.Store(id="patient_id", storage_type='session', data={"id": 1}),
         html.Div(
             [
                 patient_info_bar,
@@ -108,12 +109,14 @@ content = dbc.Container(
 app.layout = html.Div(children=[navbar, content])
 
 
-@app.callback(Output("walking", "figure"), [Input("interval", "n_intervals")])
-def update_waliking(n):
+@app.callback(Output("walking", "figure"), [Input("interval", "n_intervals"), Input("patient_id", "data")])
+def update_waliking(n, patient_data):
     # start = datetime.datetime.now().timestamp()
-    key: str = f"{MOCK_ID}_data"
+    id = patient_data["id"]
+    key: str = f"{id}_data"
     sampleList: list = CACHE.lrange(key, -1, -1)
     response = [None, None]
+    colours = ["orange",] * 6 
     if len(sampleList) > 0:
         sample = sampleList[0]
         deserialized = json.loads(sample)
@@ -128,10 +131,11 @@ def update_waliking(n):
 
 @app.callback(
     [Output("left_foot_sensors", "figure"), Output("right_foot_sensors", "figure")],
-    [Input("interval", "n_intervals"), Input("sensor_skip_slider", "value")],
+    [Input("interval", "n_intervals"), Input("sensor_skip_slider", "value"), Input("patient_id", "data")],
 )
-def update_sensors(n, step):
-    key: str = f"{MOCK_ID}_data"
+def update_sensors(n, step, patient_data):
+    id: int = patient_data["id"]
+    key: str = f"{id}_data"
     data: list = CACHE.lrange(key, 0, -1)
 
     sensors = []
