@@ -2,6 +2,7 @@ import json
 import redis
 import statistics as stat
 from functools import reduce
+from typing import List, Tuple
 
 import datetime
 import dash
@@ -21,6 +22,7 @@ except redis.ConnectionError as e:
     print(f"Redis connection error:\n{e}")
 
 PATIENT_IDS = [range(1, 7)]
+SENSORS_ID = list(range(6))
 
 MOCK_DATA: dict = json.loads(
     '{ "birthdate": "1982", "disabled": false, "firstname": "Janek", "id": 12, "lastname": "Grzegorczyk", "trace": { "id": 2494801012010, "name": "bach", "sensors": [ { "anomaly": false, "id": 0, "value": 1023 }, { "anomaly": false, "id": 1, "value": 692 }, { "anomaly": false, "id": 2, "value": 31 }, { "anomaly": false, "id": 3, "value": 542 }, { "anomaly": false, "id": 4, "value": 134 }, { "anomaly": false, "id": 5, "value": 1023 } ] } }'
