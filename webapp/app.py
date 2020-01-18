@@ -30,11 +30,11 @@ try:
         response = requests.get(BASE_URL + f"{i}")
         json_data = response.json()
         data = {
-        "birthdate": json_data["birthdate"],
-        "disabled": json_data["disabled"],
-        "firstname": json_data["firstname"],
-        "id": json_data["id"],
-        "lastname": json_data["lastname"],
+            "birthdate": json_data["birthdate"],
+            "disabled": json_data["disabled"],
+            "firstname": json_data["firstname"],
+            "id": json_data["id"],
+            "lastname": json_data["lastname"],
         }
         PATIENT_DATA.append(data)
 except requests.RequestException as e:
@@ -81,9 +81,17 @@ def generate_patient_info_bar(patient: dict) -> dbc.Col:
 
 patient_info_bar = generate_patient_info_bar(MOCK_DATA)
 
+options = []
+for i in PATIENT_DATA:
+    {"label": i["lastname"] + " " + i["firstname"], "value": i["id"]}
+
+
 navbar = dbc.NavbarSimple(
     children=[
         # dbc.NavItem(dbc.NavLink("Link", href="#")),
+        dcc.Dropdown(
+            id="patient_picker", options=options, placeholder="Patient", value="1"
+        )
     ],
     brand="Happy Feet 😀",
     # brand_href="#",
@@ -92,7 +100,7 @@ navbar = dbc.NavbarSimple(
 
 content = dbc.Container(
     [
-        dcc.Store(id="patient_id", storage_type='session', data={"id": 1}),
+        dcc.Store(id="patient_id", storage_type="session", data={"id": 1}),
         html.Div(
             [
                 patient_info_bar,
@@ -127,14 +135,17 @@ content = dbc.Container(
 app.layout = html.Div(children=[navbar, content])
 
 
-@app.callback(Output("walking", "figure"), [Input("interval", "n_intervals"), Input("patient_id", "data")])
+@app.callback(
+    Output("walking", "figure"),
+    [Input("interval", "n_intervals"), Input("patient_id", "data")],
+)
 def update_waliking(n, patient_data):
     # start = datetime.datetime.now().timestamp()
     id = patient_data["id"]
     key: str = f"{id}_data"
     sampleList: list = CACHE.lrange(key, -1, -1)
     response = [None, None]
-    colours = ["orange",] * 6 
+    colours = ["orange",] * 6
     colours[3:] = ["rgb(55, 83, 109)",] * 3
     # print(colours)
     if len(sampleList) > 0:
@@ -164,7 +175,11 @@ def update_waliking(n, patient_data):
 
 @app.callback(
     [Output("left_foot_sensors", "figure"), Output("right_foot_sensors", "figure")],
-    [Input("interval", "n_intervals"), Input("sensor_skip_slider", "value"), Input("patient_id", "data")],
+    [
+        Input("interval", "n_intervals"),
+        Input("sensor_skip_slider", "value"),
+        Input("patient_id", "data"),
+    ],
 )
 def update_sensors(n, step, patient_data):
     id: int = patient_data["id"]
