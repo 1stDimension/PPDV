@@ -3,6 +3,7 @@ services:
   cacher:
     build: ./cacher
     image: cacher:dev
+    restart: on-failure:5
     depends_on: 
       - redis
   redis:
