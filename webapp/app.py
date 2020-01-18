@@ -20,6 +20,7 @@ try:
     CACHE = redis.Redis(host=HOST, port=PORT)
 except redis.ConnectionError as e:
     print(f"Redis connection error:\n{e}")
+    exit(-1)
 
 PATIENT_IDS = [range(1, 7)]
 SENSORS_ID = list(range(6))
@@ -30,94 +31,6 @@ MOCK_DATA: dict = json.loads(
 
 MOCK_ID = 1
 
-MOCK_WALK: dict = json.loads(
-    """{
-    "1": [
-        {
-            "anomaly": false,
-            "value": 1023
-        },
-        {
-            "anomaly": false,
-            "value": 1023
-        },
-        {
-            "anomaly": false,
-            "value": 33
-        },
-        {
-            "anomaly": false,
-            "value": 1023
-        },
-        {
-            "anomaly": false,
-            "value": 660
-        },
-        {
-            "anomaly": false,
-            "value": 33
-        }
-    ],
-    "2": [
-        {
-            "anomaly": false,
-            "value": 33
-        },
-        {
-            "anomaly": false,
-            "value": 103
-        },
-        {
-            "anomaly": false,
-            "value": 1023
-        },
-        {
-            "anomaly": false,
-            "value": 1023
-        },
-        {
-            "anomaly": false,
-            "value": 283
-        },
-        {
-            "anomaly": false,
-            "value": 1023
-        }
-    ],
-    "3": [
-      {
-        "anomaly": false,
-        "id": 0,
-        "value": 1023
-      },
-      {
-        "anomaly": false,
-        "id": 1,
-        "value": 981
-      },
-      {
-        "anomaly": false,
-        "id": 2,
-        "value": 30
-      },
-      {
-        "anomaly": false,
-        "id": 3,
-        "value": 30
-      },
-      {
-        "anomaly": false,
-        "id": 4,
-        "value": 36
-      },
-      {
-        "anomaly": false,
-        "id": 5,
-        "value": 1023
-      }
-    ]
-}"""
-)
 
 app = dash.Dash(__name__, external_stylesheets=[dbc.themes.BOOTSTRAP])
 
@@ -142,18 +55,10 @@ def generate_patient_info_bar(patient: dict) -> dbc.Col:
                         ]
                     )
                 ],
-                className="",
             ),
         ],
         className="border shadow",
     )
-
-
-def pressure_graph(one: list, two: list, tree: list) -> None:
-    """
-  Creates line graph of one foot's presure 
-  """
-    pass
 
 
 patient_info_bar = generate_patient_info_bar(MOCK_DATA)
@@ -180,7 +85,6 @@ content = dbc.Container(
         dcc.Interval(id="interval", interval=5 * 1000, n_intervals=0),
         dbc.Col(
             [
-                dcc.Graph(id="left_foot_sensors"),
                 dcc.Slider(
                     id="sensor_skip_slider",
                     min=1,
@@ -199,7 +103,6 @@ content = dbc.Container(
             ],
             className="border shadow",
         ),
-        dbc.Col([dcc.Graph(id="walking"),]),
     ]
 )
 app.layout = html.Div(children=[navbar, content])
@@ -234,10 +137,6 @@ def update_waliking(n):
 def update_sensors(n, step):
     key: str = f"{MOCK_ID}_data"
     data: list = CACHE.lrange(key, 0, -1)
-    deserialized = map(lambda x: json.loads(x), data)
-
-    # a = json.loads(data)
-    # print(json.dumps(a, indent=2))
 
     sensors = []
     for i in SENSORS_ID:
