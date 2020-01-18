@@ -145,7 +145,7 @@ def generate_patient_info_bar(patient: dict) -> dbc.Col:
                 className="",
             ),
         ],
-        className="col-5 border shadow",
+        className="border shadow",
     )
 
 
@@ -169,7 +169,13 @@ navbar = dbc.NavbarSimple(
 
 content = dbc.Container(
     [
-        patient_info_bar,
+        html.Div(
+            [
+                patient_info_bar,
+                dbc.Col([dcc.Graph(id="walking")], className="border shadow"),
+            ],
+            className="d-flex flex-row bd-highlight",
+        ),
         dcc.Interval(id="walking_interval", interval=50, n_intervals=0),
         dcc.Interval(id="interval", interval=5 * 1000, n_intervals=0),
         dbc.Col(
@@ -188,6 +194,7 @@ content = dbc.Container(
                         # 10: {'label': '10', 'style': {'color': '#f50'}}
                     },
                 ),
+                dcc.Graph(id="left_foot_sensors"),
                 dcc.Graph(id="right_foot_sensors"),
             ],
             className="border shadow",
