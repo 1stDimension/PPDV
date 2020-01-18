@@ -23,11 +23,13 @@ except redis.ConnectionError as e:
     print(f"Redis connection error:\n{e}")
     exit(-1)
 
-PATIENT_IDS = [range(1, 7)]
+PATIENT_IDS = list(range(1, 7))
 PATIENT_DATA = []
 try:
     for i in PATIENT_IDS:
-        response = requests.get(BASE_URL + f"{i}")
+        # print(BASE_URL + f"{i}")
+        response = requests.get(url=BASE_URL + f"{i}")
+        # print(response.json())
         json_data = response.json()
         data = {
             "birthdate": json_data["birthdate"],
@@ -83,19 +85,22 @@ patient_info_bar = generate_patient_info_bar(MOCK_DATA)
 
 options = []
 for i in PATIENT_DATA:
-    {"label": i["lastname"] + " " + i["firstname"], "value": i["id"]}
+    options.append({"label": i["lastname"] + " " + i["firstname"], "value": i["id"]})
 
 
-navbar = dbc.NavbarSimple(
+navbar = html.Nav(
     children=[
-        # dbc.NavItem(dbc.NavLink("Link", href="#")),
+        html.P(["Happy Feet 😀"], className="navbar-brand"),
+        html.Div([
         dcc.Dropdown(
             id="patient_picker", options=options, placeholder="Patient", value="1"
+        ),], className=""
         )
     ],
-    brand="Happy Feet 😀",
+    className="navbar "
+    # brand=,
     # brand_href="#",
-    sticky="top",
+    # sticky="top",
 )
 
 content = dbc.Container(
