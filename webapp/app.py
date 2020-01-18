@@ -37,7 +37,7 @@ try:
         "lastname": json_data["lastname"],
         }
         PATIENT_DATA.append(data)
-except RequestException as e:
+except requests.RequestException as e:
     print(f"Error fetching data:\n{e}")
     exit(-1)
 
