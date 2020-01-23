@@ -39,6 +39,17 @@ def add(personId: int, data: dict) -> None:
     CACHE.rpush(keyData, serialized)
     CACHE.rpush(keyTimestamp, int(datetime.datetime.now().timestamp()))
 
+def add_anomaly(personId: int, data: dict) -> None:
+    """
+    Adds anomalies to persons anomalies list
+    """
+    serialized: str = bytes(json.dumps(data, separators=(",", ":")), "utf8")
+    keyBase: str = f"{personId}_"
+    keyData: str = f"{keyBase}anomaly"
+    keyTimestamp: str = f"{keyBase}_anomaly_timestamp"
+    CACHE.rpush(keyData, serialized)
+    CACHE.rpush(keyTimestamp, int(datetime.datetime.now().timestamp()))
+
 
 async def clean_old(personId: int) -> None:
     """
