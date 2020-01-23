@@ -18,6 +18,16 @@ except redis.ConnectionError as e:
     print(f"Connection error occurred:\n{e}")
 
 
+async def simulate_anomalies(sensors: list) -> dict:
+    """
+    Simulate anomalies 
+    """
+    bet: float = random.random()
+    if bet < ANOMALIES_TRASHOLD:
+        position = random.randrange(SENSOR_NUMBER)
+        sensors[position]["anomaly"] = True
+    return sensors
+
 def add(personId: int, data: dict) -> None:
     """
     Synchronously add one entry to personId list
