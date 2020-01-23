@@ -48,7 +48,7 @@ def add_anomaly(personId: int, data: dict) -> None:
     serialized: str = bytes(json.dumps(data, separators=(",", ":")), "utf8")
     keyBase: str = f"{personId}_"
     keyData: str = f"{keyBase}anomaly"
-    keyTimestamp: str = f"{keyBase}_anomaly_timestamp"
+    keyTimestamp: str = f"{keyBase}anomaly_timestamp"
     CACHE.rpush(keyData, serialized)
     CACHE.rpush(keyTimestamp, int(datetime.datetime.now().timestamp()))
 
@@ -95,7 +95,7 @@ async def pull_data(personId: int) -> None:
         trace: dict = data["trace"]
         sensors: dict = trace["sensors"]
 
-        sensors = simulate_anomalies(sensors)
+        sensors = await simulate_anomalies(sensors)
 
         anomalies = map(lambda x: x["anomaly"], sensors)
         anomalies_present = reduce(lambda x, y: x or y, anomalies)
