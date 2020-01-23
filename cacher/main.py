@@ -10,6 +10,8 @@ import logging
 from conf import *
 import time
 import datetime
+import random
+from functools import reduce
 
 CACHE = None
 try:
@@ -92,6 +94,13 @@ async def pull_data(personId: int) -> None:
         data: dict = response.json()
         trace: dict = data["trace"]
         sensors: dict = trace["sensors"]
+
+        sensors = simulate_anomalies(sensors)
+
+        anomalies = map(lambda x: x["anomaly"], sensors)
+        anomalies_present = reduce(lambda x, y: x or y, anomalies)
+        if anomalies_present:
+            add_anomaly(personId, sensors)
 
         add(personId, sensors)
         await asyncio.sleep(REQUEST_DELAY)
