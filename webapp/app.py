@@ -116,9 +116,9 @@ content = dbc.Container(
             ],
             className="d-flex flex-row bd-highlight pt-4",
         ),
-        dcc.Interval(id="walking_interval", interval=50, n_intervals=0),
-        dcc.Interval(id="interval", interval=50 * 1000, n_intervals=0),
-        dcc.Interval(id="anomaly_interval", interval=6 * 1000, n_intervals=0),
+        dcc.Interval(id="walking_interval", interval=100, n_intervals=0),
+        dcc.Interval(id="interval", interval=5 * 1000, n_intervals=0),
+        dcc.Interval(id="anomaly_interval", interval=60 * 1000, n_intervals=0),
         dbc.Col(
             [   
                 html.H3("Live data", className="text-center"),
