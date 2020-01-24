@@ -301,8 +301,8 @@ def update_histogram(n, patient_data):
     extracted_left = map(extract_left, data)
     extracted_right = map(extract_right, data)
 
-    left = (reduce(lambda x,y: x+y, extracted_left))
-    right = (reduce(lambda x,y: x+y, extracted_right))
+    left = (reduce(lambda x,y: x+y, extracted_left, [0]))
+    right = (reduce(lambda x,y: x+y, extracted_right, [0]))
     # left_histogram = np.histogram(left,bins = [0,128,256,384,512,640, 768, 896, 1024]) 
     # right_histogram = np.histogram(right,bins = [0,128,256,384,512,640, 768, 896, 1024]) 
     # print(left_histogram[0])
