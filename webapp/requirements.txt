@@ -1,4 +1,4 @@
 redis
 requests
-numpy
 dash
+dash-bootstrap-components
