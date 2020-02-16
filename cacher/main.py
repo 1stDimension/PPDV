@@ -30,7 +30,7 @@ async def simulate_anomalies(sensors: list) -> dict:
         sensors[position]["anomaly"] = True
     return sensors
 
-def add(personId: int, data: dict) -> None:
+async def add(personId: int, data: dict) -> None:
     """
     Synchronously add one entry to personId list
     """
@@ -41,7 +41,7 @@ def add(personId: int, data: dict) -> None:
     CACHE.rpush(keyData, serialized)
     CACHE.rpush(keyTimestamp, int(datetime.datetime.now().timestamp()))
 
-def add_anomaly(personId: int, data: dict) -> None:
+async def add_anomaly(personId: int, data: dict) -> None:
     """
     Adds anomalies to persons anomalies list
     """
@@ -78,6 +78,7 @@ async def clean_old(personId: int) -> None:
                 CACHE.lpop(keyTimestamp)
             else:
                 needs_cleaning = False
+            await asyncio.sleep(0)
         await asyncio.sleep(CLEAR_DELAY)
 
 
@@ -100,9 +101,9 @@ async def pull_data(personId: int) -> None:
         anomalies = map(lambda x: x["anomaly"], sensors)
         anomalies_present = reduce(lambda x, y: x or y, anomalies)
         if anomalies_present:
-            add_anomaly(personId, sensors)
+            await add_anomaly(personId, sensors)
 
-        add(personId, sensors)
+        await add(personId, sensors)
         await asyncio.sleep(REQUEST_DELAY)
 
 
