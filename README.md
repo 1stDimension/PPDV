@@ -45,3 +45,6 @@ The goal of this project is to create an application visualizing realtime data f
   }
 }
 ```
+
+# Details
+
