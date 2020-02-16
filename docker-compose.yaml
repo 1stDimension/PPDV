@@ -4,6 +4,11 @@ services:
     build: ./cacher
     image: cacher:dev
     restart: on-failure:5
+    deploy:
+      restart_policy:
+        condition: on-failure
+        max_attempts: 3
+        delay: 5s
     depends_on: 
       - redis
   webapp:
