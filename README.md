@@ -61,7 +61,7 @@ accessed by keys "{personId}_anomaly", "{personId}_anomaly_timestamp", "{personI
 ## Caching
 Caching is handled by dedicated application called "Cacher". The main feature of it is an ability to fetch data asynchronously. This allows for setting delays between requests for the same patient, which to certain degree is un affected by the amount of people to request data about. Besides caching the data Cacher also ensures that records older than **MAX_SEC** are removed. Simply every **CLEAR_DELAY** the clean up is performed. For demonstration purposes there is also one functionality, simulating anomalies in data. Every time the data is fetched dices are rolled (between 0 and 1) if threshold **ANOMALIES_TRASHOLD** is exceeded. Data of random sensor is changed to indicate anomaly. Anomalies deserve special attention therefore are stored is separate list and are *never* removed.
 
-# Running aplication
+# Running application
 
 Before attempting to start this program make sure you've created configuration files for each module (file called conf.py in module's root directory)
 
