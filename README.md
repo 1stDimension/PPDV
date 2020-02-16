@@ -48,3 +48,6 @@ The goal of this project is to create an application visualizing realtime data f
 
 # Details
 
+## General
+I decided to separate python application into 2 main components and a data store. Webapp, and cacher. This allows both processes to run in paralel, which is crustal in order to achieve near real time visualisation of walking person as python's Global Interpreter Lock is a major drawback when it comes to the performance.
+
