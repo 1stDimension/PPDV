@@ -86,3 +86,12 @@ IDS = range(1, 7) # IDs of ppl to request data about
 SENSOR_NUMBER = 6
 ANOMALIES_TRASHOLD = 0.5 # How many anomalies generate
 ```
+
+## Webapp
+```python
+HOST : str = "localhost" # REDIS HOST
+PORT : int = 6379 # REDIS PORT
+BASE_URL : str = # URL to endpoint with data
+IDS = range(1, 7) # IDs of ppl to request data about
+SENSORS_ID = range(6) 
+```
