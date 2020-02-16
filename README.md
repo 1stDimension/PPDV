@@ -74,3 +74,15 @@ Ran in projects root directory. Then we should allow docker to do it's magic. If
 # Configuration
 Configuration of each module has to be in file called "conf.py". Most of settings is self explanatory
 
+## Cacher
+```python
+HOST : str = "redis"
+PORT : int = 6379
+BASE_URL : str = # URL to endpoint with data
+MAX_SEC : int = 5 * 60
+REQUEST_DELAY: int = 0.3
+CLEAR_DELAY: int = 60
+IDS = range(1, 7) # IDs of ppl to request data about
+SENSOR_NUMBER = 6
+ANOMALIES_TRASHOLD = 0.5 # How many anomalies generate
+```
