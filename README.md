@@ -70,3 +70,7 @@ App makes use of docker-compose. Docker-compose is an extension of Docker, progr
 docker-compose up -d
 ```
 Ran in projects root directory. Then we should allow docker to do it's magic. If all goes well head to localhost:8050 to see this project in action.
+
+# Configuration
+Configuration of each module has to be in file called "conf.py". Most of settings is self explanatory
+
